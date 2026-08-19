@@ -1,0 +1,13 @@
+{
+  "@context": "/api/contexts/Club",
+  "@id": "/api/clubs/553",
+  "@type": "Club",
+  "cl_no": "553",
+  "name": "AS EXEMPLE FOOTBALL",
+  "sortName": "AS EXEMPLE",
+  "logo": "https://exemple.invalid/logos/553.png",
+  "commune": "Toulouse",
+  "ligue": { "libelle": "LIGUE OCCITANIE" },
+  "district": { "libelle": "DISTRICT HAUTE-GARONNE" },
+  "couleurs": "Violet et blanc"
+}

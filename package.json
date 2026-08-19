@@ -1,0 +1,19 @@
+{
+  "name": "amateurscore",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Suivi du football amateur francais : donnees FFF, feuilles de match et notation des joueurs",
+  "workspaces": ["server", "web"],
+  "engines": { "node": ">=20.10" },
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:server": "npm run dev -w server",
+    "dev:web": "npm run dev -w web",
+    "build": "npm run build -w server && npm run build -w web",
+    "start": "npm run start -w server",
+    "seed": "npm run seed -w server",
+    "sync": "npm run sync -w server",
+    "test": "npm run test -w server",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w web"
+  }
+}

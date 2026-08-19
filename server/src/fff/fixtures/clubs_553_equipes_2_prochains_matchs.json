@@ -1,0 +1,7 @@
+{
+  "@context": "/api/contexts/Match",
+  "@id": "/api/clubs/553/equipes/2/prochains_matchs",
+  "@type": "hydra:Collection",
+  "hydra:totalItems": 0,
+  "hydra:member": []
+}

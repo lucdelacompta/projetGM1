@@ -1,0 +1,24 @@
+{
+  "@context": "/api/contexts/Equipe",
+  "@id": "/api/clubs/553/equipes",
+  "@type": "hydra:Collection",
+  "hydra:totalItems": 2,
+  "hydra:member": [
+    {
+      "@type": "Equipe",
+      "number": 1,
+      "short_name": "AS EXEMPLE",
+      "category_label": "Senior M",
+      "club": { "cl_no": "553", "name": "AS EXEMPLE FOOTBALL", "logo": "https://exemple.invalid/logos/553.png" },
+      "engagements": [{ "competition": { "name": "REGIONAL 1", "cp_no": "420001" } }]
+    },
+    {
+      "@type": "Equipe",
+      "number": 2,
+      "short_name": "AS EXEMPLE",
+      "category_label": "Senior M",
+      "club": { "cl_no": "553", "name": "AS EXEMPLE FOOTBALL", "logo": "https://exemple.invalid/logos/553.png" },
+      "engagements": [{ "competition": { "name": "DEPARTEMENTAL 1", "cp_no": "430012" } }]
+    }
+  ]
+}

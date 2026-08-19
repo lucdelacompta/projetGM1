@@ -1,0 +1,100 @@
+{
+  "@context": "/api/contexts/Match",
+  "@id": "/api/clubs/553/equipes/1/prochains_matchs",
+  "@type": "hydra:Collection",
+  "hydra:totalItems": 2,
+  "hydra:member": [
+    {
+      "@type": "Match",
+      "ma_no": "9900104",
+      "date": "2025-09-28",
+      "time": "15:00",
+      "poule_journee": {
+        "number": 4
+      },
+      "home": {
+        "number": 1,
+        "short_name": "FC VOISIN",
+        "club": {
+          "cl_no": "612",
+          "name": "FC VOISIN",
+          "logo": "https://exemple.invalid/logos/612.png"
+        }
+      },
+      "away": {
+        "number": 1,
+        "short_name": "AS EXEMPLE FOOTBALL",
+        "club": {
+          "cl_no": "553",
+          "name": "AS EXEMPLE FOOTBALL",
+          "logo": "https://exemple.invalid/logos/553.png"
+        }
+      },
+      "home_score": null,
+      "away_score": null,
+      "ma_statut": "A",
+      "competition": {
+        "cp_no": "420001",
+        "name": "REGIONAL 1",
+        "type": "CH",
+        "saison": 2025
+      },
+      "poule": {
+        "id": "3",
+        "name": "POULE A",
+        "phase": {
+          "number": 1
+        }
+      },
+      "terrain": {
+        "name": "STADE MUNICIPAL DE L EXEMPLE"
+      }
+    },
+    {
+      "@type": "Match",
+      "ma_no": "9900105",
+      "date": "2025-10-05",
+      "time": "15:00",
+      "poule_journee": {
+        "number": 5
+      },
+      "home": {
+        "number": 1,
+        "short_name": "AS EXEMPLE FOOTBALL",
+        "club": {
+          "cl_no": "553",
+          "name": "AS EXEMPLE FOOTBALL",
+          "logo": "https://exemple.invalid/logos/553.png"
+        }
+      },
+      "away": {
+        "number": 1,
+        "short_name": "US RIVIERE",
+        "club": {
+          "cl_no": "744",
+          "name": "US RIVIERE",
+          "logo": "https://exemple.invalid/logos/744.png"
+        }
+      },
+      "home_score": null,
+      "away_score": null,
+      "ma_statut": "A",
+      "competition": {
+        "cp_no": "420001",
+        "name": "REGIONAL 1",
+        "type": "CH",
+        "saison": 2025
+      },
+      "poule": {
+        "id": "3",
+        "name": "POULE A",
+        "phase": {
+          "number": 1
+        }
+      },
+      "terrain": {
+        "name": "STADE MUNICIPAL DE L EXEMPLE"
+      }
+    }
+  ]
+}
