@@ -46,6 +46,10 @@ npm run build         # compile le serveur puis l'interface
 npm start             # un seul processus sert l'API et l'interface sur http://localhost:4000
 ```
 
+`npm start` sans `npm run build` prealable ne sert que l'API : la page d'accueil explique alors
+quoi lancer. Les chemins de la base et de l'interface sont resolus depuis le dossier `server/`,
+le serveur peut donc etre lance depuis n'importe quel repertoire.
+
 Copiez `.env.example` vers `.env` pour ajuster le port, le chemin de la base ou les paramètres FFF.
 
 ## Architecture

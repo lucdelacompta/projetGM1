@@ -29,15 +29,35 @@ export async function buildServer() {
   await app.register(syncRoutes);
 
   // Sert l'interface compilee si elle existe (npm run build).
-  if (fs.existsSync(config.webDist)) {
+  const webBuilt = fs.existsSync(path.join(config.webDist, 'index.html'));
+  if (webBuilt) {
     await app.register(fastifyStatic, { root: config.webDist });
-    app.setNotFoundHandler((request, reply) => {
-      if (request.url.startsWith('/api/')) {
-        return reply.code(404).send({ error: 'Route inconnue' });
-      }
-      return reply.sendFile('index.html');
-    });
+  } else {
+    app.log.warn(
+      `Interface non compilee (${config.webDist} absent) : seule l'API repond. ` +
+        'Lancez "npm run build" a la racine du depot, ou "npm run dev" pour le mode developpement.',
+    );
   }
+
+  app.setNotFoundHandler((request, reply) => {
+    if (request.url.startsWith('/api/')) {
+      return reply.code(404).send({ error: 'Route inconnue' });
+    }
+    if (webBuilt) return reply.sendFile('index.html');
+    return reply.code(503).type('text/html; charset=utf-8').send(
+      `<!doctype html><meta charset="utf-8"><title>Interface non compilee</title>
+       <body style="font-family:system-ui;max-width:40rem;margin:4rem auto;line-height:1.5">
+       <h1>Interface non compilee</h1>
+       <p>L'API fonctionne (<a href="/api/health">/api/health</a>), mais les fichiers de
+       l'interface sont introuvables&nbsp;:</p>
+       <p><code>${config.webDist}</code></p>
+       <p>Depuis la racine du depot&nbsp;:</p>
+       <pre>npm run build
+npm start</pre>
+       <p>Ou, en developpement&nbsp;: <code>npm run dev</code> puis
+       <a href="http://localhost:5173">http://localhost:5173</a>.</p></body>`,
+    );
+  });
 
   return app;
 }

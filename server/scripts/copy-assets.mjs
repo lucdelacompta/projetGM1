@@ -1,8 +1,11 @@
 // Copie les fichiers non-TypeScript necessaires a l execution (schema SQL, fixtures).
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = path.dirname(new URL(import.meta.url).pathname);
+// fileURLToPath et pas new URL().pathname : sous Windows ce dernier renvoie
+// "/C:/Users/..." (barre de tete, caracteres encodes), que path.join casse.
+const root = path.dirname(fileURLToPath(import.meta.url));
 const src = path.join(root, '..', 'src');
 const dist = path.join(root, '..', 'dist');
 

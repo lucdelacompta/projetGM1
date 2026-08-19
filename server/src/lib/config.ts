@@ -1,5 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 function str(name: string, fallback: string): string {
   const v = process.env[name];
@@ -15,7 +16,10 @@ function bool(name: string, fallback: boolean): boolean {
   return v === '1' || v.toLowerCase() === 'true' || v.toLowerCase() === 'yes';
 }
 
-const root = path.resolve(process.cwd());
+// Ancre les chemins par defaut sur le dossier `server/`, que l on soit lance
+// depuis la racine du depot, depuis server/ ou par un service systeme :
+// ce fichier vit en src/lib/ (tsx) ou dist/lib/ (compile), soit deux niveaux plus bas.
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 export const config = {
   port: int('PORT', 4000),
