@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3';
+import { Db } from './driver.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,28 +6,28 @@ import { config } from '../lib/config.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
-let instance: Database.Database | null = null;
+let instance: Db | null = null;
 
-export function getDb(): Database.Database {
+export function getDb(): Db {
   if (instance) return instance;
   fs.mkdirSync(path.dirname(config.databasePath), { recursive: true });
-  const db = new Database(config.databasePath);
-  db.pragma('journal_mode = WAL');
-  db.pragma('foreign_keys = ON');
+  const db = new Db(config.databasePath);
+  db.exec('PRAGMA journal_mode = WAL');
+  db.exec('PRAGMA foreign_keys = ON');
   migrate(db);
   instance = db;
   return db;
 }
 
 /** Base en memoire, utilisee par les tests. */
-export function createMemoryDb(): Database.Database {
-  const db = new Database(':memory:');
-  db.pragma('foreign_keys = ON');
+export function createMemoryDb(): Db {
+  const db = new Db(':memory:');
+  db.exec('PRAGMA foreign_keys = ON');
   migrate(db);
   return db;
 }
 
-function migrate(db: Database.Database): void {
+function migrate(db: Db): void {
   const candidates = [
     path.join(here, 'schema.sql'),
     path.join(here, '..', '..', 'src', 'db', 'schema.sql'),

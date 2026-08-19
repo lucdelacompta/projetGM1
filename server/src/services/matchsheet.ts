@@ -1,4 +1,4 @@
-import type Database from 'better-sqlite3';
+import type { Db } from '../db/driver.js';
 import { computeAutoRating, manOfTheMatch, minutesPlayed } from '../domain/rating.js';
 import type { AppearanceRole, EventType, PlayerPosition, SheetSide } from '../domain/types.js';
 import { getMatch, listAppearances, listEvents, upsertPlayer, upsertSheet } from '../db/repositories.js';
@@ -37,7 +37,7 @@ export class ValidationError extends Error {
  * Remplace integralement la composition existante (operation idempotente).
  */
 export function saveSheet(
-  db: Database.Database,
+  db: Db,
   matchId: number,
   side: SheetSide,
   input: SheetInput,
@@ -136,7 +136,7 @@ export function saveSheet(
 }
 
 export function setRating(
-  db: Database.Database,
+  db: Db,
   appearanceId: number,
   rating: number | null,
   comment?: string | null,
@@ -175,7 +175,7 @@ const EVENT_TYPES: EventType[] = [
   'substitution',
 ];
 
-export function addEvent(db: Database.Database, matchId: number, input: EventInput): number {
+export function addEvent(db: Db, matchId: number, input: EventInput): number {
   if (!EVENT_TYPES.includes(input.type)) {
     throw new ValidationError(`Type d'evenement inconnu: ${input.type}`);
   }
@@ -200,13 +200,13 @@ export function addEvent(db: Database.Database, matchId: number, input: EventInp
   return Number(info.lastInsertRowid);
 }
 
-export function deleteEvent(db: Database.Database, matchId: number, eventId: number): void {
+export function deleteEvent(db: Db, matchId: number, eventId: number): void {
   db.prepare('DELETE FROM match_events WHERE id = ? AND match_id = ?').run(eventId, matchId);
   recomputeAutoRatings(db, matchId);
 }
 
 /** Recalcule le score a partir des buts saisis (utile pendant la retranscription). */
-export function recomputeScoreFromEvents(db: Database.Database, matchId: number): void {
+export function recomputeScoreFromEvents(db: Db, matchId: number): void {
   const match = getMatch(db, matchId);
   if (!match) return;
   const events = listEvents(db, matchId);
@@ -233,7 +233,7 @@ export function recomputeScoreFromEvents(db: Database.Database, matchId: number)
 }
 
 /** Applique le bareme automatique a toutes les participations d'une rencontre. */
-export function recomputeAutoRatings(db: Database.Database, matchId: number): void {
+export function recomputeAutoRatings(db: Db, matchId: number): void {
   const match = getMatch(db, matchId);
   if (!match) return;
   const appearances = listAppearances(db, matchId);
@@ -269,7 +269,7 @@ export function recomputeAutoRatings(db: Database.Database, matchId: number): vo
 }
 
 /** Vue complete d'une rencontre : score, compositions, evenements, notes. */
-export function getMatchDetail(db: Database.Database, matchId: number) {
+export function getMatchDetail(db: Db, matchId: number) {
   const match = getMatch(db, matchId);
   if (!match) return null;
   const sheets = db.prepare('SELECT * FROM match_sheets WHERE match_id = ?').all(matchId) as Record<

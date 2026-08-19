@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type Database from 'better-sqlite3';
+import type { Db } from '../src/db/driver.js';
 import { createMemoryDb } from '../src/db/index.js';
 import { FffClient } from '../src/fff/client.js';
 import { syncClubs } from '../src/services/sync.js';
@@ -10,7 +10,7 @@ function offlineClient(): FffClient {
   return new FffClient({ offline: true, cacheTtl: 0, rateLimitMs: 0 });
 }
 
-function count(db: Database.Database, table: string): number {
+function count(db: Db, table: string): number {
   return (db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get() as { n: number }).n;
 }
 

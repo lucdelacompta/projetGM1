@@ -1,4 +1,4 @@
-import type Database from 'better-sqlite3';
+import type { Db } from '../db/driver.js';
 import { FffClient } from '../fff/client.js';
 import { ENDPOINTS } from '../fff/endpoints.js';
 import { mapClub, mapMatch, mapTeam, seasonFromDate, type MappedMatch, type MappedTeam } from '../fff/mappers.js';
@@ -31,7 +31,7 @@ export interface SyncReport {
  * poule quand l'API les fournit, ce qui permet de recalculer les classements.
  */
 export async function syncClubs(
-  db: Database.Database,
+  db: Db,
   clubNumbers: string[],
   client = new FffClient(),
 ): Promise<SyncReport> {
@@ -119,7 +119,7 @@ export async function syncClubs(
 
 /** Import d'une poule complete (calendrier + resultats de toutes les equipes). */
 export async function syncPool(
-  db: Database.Database,
+  db: Db,
   cpNo: string,
   phNo: string,
   poNo: string,
@@ -167,7 +167,7 @@ export async function syncPool(
 
 type IngestResult = 'inserted' | 'updated' | 'skipped';
 
-export function ingestMatch(db: Database.Database, mapped: MappedMatch, season: string): IngestResult {
+export function ingestMatch(db: Db, mapped: MappedMatch, season: string): IngestResult {
   const homeTeamId = ensureTeam(db, mapped.home);
   const awayTeamId = ensureTeam(db, mapped.away);
   if (!homeTeamId || !awayTeamId) return 'skipped';
@@ -210,7 +210,7 @@ export function ingestMatch(db: Database.Database, mapped: MappedMatch, season: 
   return created ? 'inserted' : 'updated';
 }
 
-function ensureTeam(db: Database.Database, team: MappedTeam | null): number | null {
+function ensureTeam(db: Db, team: MappedTeam | null): number | null {
   if (!team?.club) return null;
   const clubId = upsertClub(db, team.club);
   return upsertTeam(db, {
@@ -222,12 +222,12 @@ function ensureTeam(db: Database.Database, team: MappedTeam | null): number | nu
   });
 }
 
-function startRun(db: Database.Database, source: string, scope: string): number {
+function startRun(db: Db, source: string, scope: string): number {
   const info = db.prepare('INSERT INTO sync_runs (source, scope) VALUES (?, ?)').run(source, scope);
   return Number(info.lastInsertRowid);
 }
 
-function finishRun(db: Database.Database, runId: number, report: SyncReport): void {
+function finishRun(db: Db, runId: number, report: SyncReport): void {
   db.prepare(
     `UPDATE sync_runs SET finished_at = datetime('now'), status = ?, inserted = ?, updated = ?,
        requests = ?, message = ? WHERE id = ?`,

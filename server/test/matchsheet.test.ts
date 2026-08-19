@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import type Database from 'better-sqlite3';
+import type { Db } from '../src/db/driver.js';
 import { createMemoryDb } from '../src/db/index.js';
 import {
   playersUsage,
@@ -18,7 +18,7 @@ import {
   setRating,
 } from '../src/services/matchsheet.js';
 
-let db: Database.Database;
+let db: Db;
 let matchId: number;
 let homeTeam: number;
 let awayTeam: number;

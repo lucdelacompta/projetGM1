@@ -3,6 +3,7 @@ import { getDb } from '../db/index.js';
 import { listMatches, playersUsage, upsertClub, upsertPlayer, upsertTeam } from '../db/repositories.js';
 import { computeStandings } from '../domain/standings.js';
 import { weightedAverage } from '../domain/rating.js';
+import type { SqlValue } from '../db/driver.js';
 
 export async function catalogRoutes(app: FastifyInstance): Promise<void> {
   const db = getDb();
@@ -119,7 +120,7 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
   app.get('/api/players', async (request) => {
     const q = request.query as Record<string, string | undefined>;
     const where: string[] = [];
-    const params: unknown[] = [];
+    const params: SqlValue[] = [];
     if (q.q) {
       where.push('(p.last_name LIKE ? OR p.first_name LIKE ?)');
       params.push(`%${q.q}%`, `%${q.q}%`);

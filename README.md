@@ -21,6 +21,16 @@ import des données publiques de la **FFF**, retranscription des **feuilles de m
 | --- | --- | --- |
 | ![Fiche match](docs/captures/match.png) | ![Notes](docs/captures/notes.png) | ![Feuille de match](docs/captures/feuille.png) |
 
+## Prérequis
+
+**Node.js 24 LTS** (ou toute version ≥ 23.4) — [nodejs.org](https://nodejs.org). Aucune autre
+installation : pas de base de données à part, et aucune dépendance native à compiler, donc ni
+Python ni compilateur C++.
+
+Sur Node 22.5 à 23.3, le module SQLite intégré existe mais reste derrière une option : lancez les
+commandes avec `NODE_OPTIONS=--experimental-sqlite` (`set NODE_OPTIONS=--experimental-sqlite` sous
+Windows). Le message d'erreur au démarrage le rappelle si besoin.
+
 ## Démarrage rapide
 
 ```bash
@@ -41,7 +51,7 @@ Copiez `.env.example` vers `.env` pour ajuster le port, le chemin de la base ou 
 ## Architecture
 
 ```
-server/                 API Fastify + SQLite (better-sqlite3), TypeScript
+server/                 API Fastify + SQLite (module `node:sqlite` integre), TypeScript
   src/domain/           regles metier pures : bareme de notation, classements, types
   src/fff/              client API DOFA (cache, debit, pagination Hydra), mappers, fixtures
   src/db/               schema SQL, migrations, requetes
@@ -53,8 +63,11 @@ web/                    interface React + Vite (TypeScript, CSS maison, theme so
 docs/                   documentation API FFF et bareme de notation
 ```
 
-Le stockage est un simple fichier SQLite (`server/data/amateurscore.db`) : aucune base externe à
-installer. Les règles métier sont isolées dans `server/src/domain/`, sans dépendance à la base ni
+Le stockage est un simple fichier SQLite (`server/data/amateurscore.db`), ouvert avec le module
+`node:sqlite` fourni par Node : aucune base externe à installer, et aucun module natif à compiler
+au moment de `npm install`. Le pilote est isolé dans
+[`server/src/db/driver.ts`](server/src/db/driver.ts), qui ajoute la gestion des transactions
+(imbriquées comprises). Les règles métier sont isolées dans `server/src/domain/`, sans dépendance à la base ni
 au réseau, ce qui les rend testables directement.
 
 ## Données FFF

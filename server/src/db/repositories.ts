@@ -1,4 +1,4 @@
-import type Database from 'better-sqlite3';
+import type { Db, SqlValue } from './driver.js';
 import type {
   Appearance,
   Match,
@@ -25,7 +25,7 @@ export interface ClubInput {
   colors?: string | null;
 }
 
-export function upsertClub(db: Database.Database, input: ClubInput): number {
+export function upsertClub(db: Db, input: ClubInput): number {
   const existing = input.fff_id
     ? db.prepare('SELECT id FROM clubs WHERE fff_id = ?').get(input.fff_id)
     : db.prepare('SELECT id FROM clubs WHERE name = ? COLLATE NOCASE').get(input.name);
@@ -84,7 +84,7 @@ export interface TeamInput {
   level?: string | null;
 }
 
-export function upsertTeam(db: Database.Database, input: TeamInput): number {
+export function upsertTeam(db: Db, input: TeamInput): number {
   const existing = input.fff_key
     ? db.prepare('SELECT id FROM teams WHERE fff_key = ?').get(input.fff_key)
     : db
@@ -107,7 +107,7 @@ export function upsertTeam(db: Database.Database, input: TeamInput): number {
 /* ----------------------------------------------------- competitions/pools */
 
 export function upsertCompetition(
-  db: Database.Database,
+  db: Db,
   input: { fff_cp_no?: string | null; name: string; season: string; level?: string | null; type?: string | null },
 ): number {
   const existing = db
@@ -128,7 +128,7 @@ export function upsertCompetition(
 }
 
 export function upsertPool(
-  db: Database.Database,
+  db: Db,
   input: { competition_id: number; name: string; fff_ph_no?: string | null; fff_po_no?: string | null },
 ): number {
   const existing = db
@@ -167,7 +167,7 @@ export interface UpsertResult {
   created: boolean;
 }
 
-export function upsertMatch(db: Database.Database, input: MatchInput): UpsertResult {
+export function upsertMatch(db: Db, input: MatchInput): UpsertResult {
   const existing = input.fff_ma_no
     ? db.prepare('SELECT id FROM matches WHERE fff_ma_no = ?').get(input.fff_ma_no)
     : db
@@ -253,9 +253,9 @@ export interface MatchListFilters {
   limit?: number;
 }
 
-export function listMatches(db: Database.Database, filters: MatchListFilters = {}): Row[] {
+export function listMatches(db: Db, filters: MatchListFilters = {}): Row[] {
   const where: string[] = [];
-  const params: unknown[] = [];
+  const params: SqlValue[] = [];
   if (filters.date) {
     where.push('substr(kickoff, 1, 10) = ?');
     params.push(filters.date);
@@ -301,7 +301,7 @@ export function listMatches(db: Database.Database, filters: MatchListFilters = {
   return db.prepare(sql).all(...params) as Row[];
 }
 
-export function getMatch(db: Database.Database, id: number): Row | undefined {
+export function getMatch(db: Db, id: number): Row | undefined {
   return db.prepare('SELECT * FROM v_matches WHERE id = ?').get(id) as Row | undefined;
 }
 
@@ -317,7 +317,7 @@ export interface PlayerInput {
   shirt_number?: number | null;
 }
 
-export function upsertPlayer(db: Database.Database, input: PlayerInput): number {
+export function upsertPlayer(db: Db, input: PlayerInput): number {
   const existing = db
     .prepare(
       `SELECT id FROM players
@@ -360,14 +360,14 @@ export function upsertPlayer(db: Database.Database, input: PlayerInput): number 
 
 /* ----------------------------------------------------------- match sheets */
 
-export function getSheet(db: Database.Database, matchId: number, side: SheetSide): MatchSheet | undefined {
+export function getSheet(db: Db, matchId: number, side: SheetSide): MatchSheet | undefined {
   return db.prepare('SELECT * FROM match_sheets WHERE match_id = ? AND side = ?').get(matchId, side) as
     | MatchSheet
     | undefined;
 }
 
 export function upsertSheet(
-  db: Database.Database,
+  db: Db,
   input: { match_id: number; team_id: number; side: SheetSide; formation?: string | null; coach?: string | null; status?: 'draft' | 'validated'; notes?: string | null },
 ): number {
   const existing = getSheet(db, input.match_id, input.side);
@@ -402,7 +402,7 @@ export function upsertSheet(
   return Number(info.lastInsertRowid);
 }
 
-export function listAppearances(db: Database.Database, matchId: number): Row[] {
+export function listAppearances(db: Db, matchId: number): Row[] {
   return db
     .prepare(
       `SELECT a.*, p.first_name, p.last_name, p.position AS player_position, s.side
@@ -416,7 +416,7 @@ export function listAppearances(db: Database.Database, matchId: number): Row[] {
     .all(matchId) as Row[];
 }
 
-export function listEvents(db: Database.Database, matchId: number): Row[] {
+export function listEvents(db: Db, matchId: number): Row[] {
   return db
     .prepare(
       `SELECT e.*, p.first_name, p.last_name, r.first_name AS related_first_name,
@@ -440,9 +440,9 @@ export interface UsageFilters {
 }
 
 /** "Joueurs utilises" : agregation des feuilles de match retranscrites. */
-export function playersUsage(db: Database.Database, filters: UsageFilters = {}): PlayerUsage[] {
+export function playersUsage(db: Db, filters: UsageFilters = {}): PlayerUsage[] {
   const where: string[] = [];
-  const params: unknown[] = [];
+  const params: SqlValue[] = [];
   if (filters.teamId) {
     where.push('a.team_id = ?');
     params.push(filters.teamId);
